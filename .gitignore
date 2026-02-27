@@ -15,6 +15,8 @@
 !go.mod
 !README.md
 !LICENSE
+!VERSION
+!Makefile
 
 # ...even if they are in subdirectories
 !*/
