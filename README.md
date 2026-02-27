@@ -28,5 +28,5 @@ mysql://[user[:password]@]host[:port]/[database][?options]
 Credentials can also be loaded from a MySQL defaults file:
 
 ```
-mysql://host/db?defaultsFile=/etc/mysql/my.cnf&defaultsGroup=client
+mysql://host/db?defaultsFile=~/.my.cnf&defaultsGroup=readonly
 ```
