@@ -13,6 +13,10 @@ type CLI struct {
                 arg:""`
     SetVar []string `
                 help:"Set a MySQL session variable (name=value)"`
+    Mode   string  `
+                help:"Column size measurement mode: text = COM_QUERY, binary = COM_STMT_EXECUTE" 
+                default:"text" 
+                enum:"binary,text"`
 }
 
 func (cli *CLI) ValidateConfig() error {

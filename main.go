@@ -126,7 +126,7 @@ func main() {
         os.Exit(1)
     }
 
-    if err := runner.Run(cli.DSN, query, cli.SetVar); err != nil {
+    if err := runner.Run(cli.DSN, query, cli.SetVar, cli.Mode == "binary"); err != nil {
         fmt.Fprintln(os.Stderr, "error:", err)
         os.Exit(1)
     }

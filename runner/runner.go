@@ -64,6 +64,7 @@ type colStats struct {
 	name       string
 	typeName   string
 	typeCode   byte
+	decimals   uint8
 	nullable   bool
 	minLen     int
 	maxLen     int
@@ -186,6 +187,53 @@ func fieldTypeName(t byte) string {
 	}
 }
 
+func fractionalBytes(decimals uint8) int {
+	switch {
+	case decimals == 0:
+		return 0
+	case decimals <= 2:
+		return 1
+	case decimals <= 4:
+		return 2
+	default:
+		return 3
+	}
+}
+
+func typeFixedSize(t byte, decimals uint8) int {
+	switch t {
+	case mysql.MYSQL_TYPE_TINY:
+		return 1
+	case mysql.MYSQL_TYPE_SHORT:
+		return 2
+	case mysql.MYSQL_TYPE_INT24:
+		return 3
+	case mysql.MYSQL_TYPE_LONG:
+		return 4
+	case mysql.MYSQL_TYPE_LONGLONG:
+		return 8
+	case mysql.MYSQL_TYPE_FLOAT:
+		return 4
+	case mysql.MYSQL_TYPE_DOUBLE:
+		return 8
+	case mysql.MYSQL_TYPE_DATE, mysql.MYSQL_TYPE_NEWDATE:
+		return 3
+	case mysql.MYSQL_TYPE_TIME, mysql.MYSQL_TYPE_TIME2:
+		return 3 + fractionalBytes(decimals)
+	case mysql.MYSQL_TYPE_DATETIME:
+		return 8
+	case mysql.MYSQL_TYPE_DATETIME2:
+		return 5 + fractionalBytes(decimals)
+	case mysql.MYSQL_TYPE_TIMESTAMP:
+		return 4
+	case mysql.MYSQL_TYPE_TIMESTAMP2:
+		return 4 + fractionalBytes(decimals)
+	case mysql.MYSQL_TYPE_YEAR:
+		return 2
+	}
+	return 0
+}
+
 func isStringType(t byte) bool {
 	switch t {
 	case mysql.MYSQL_TYPE_VARCHAR,
@@ -208,13 +256,14 @@ func initColStats(fields []*mysql.Field) []colStats {
 		s[i].name = string(f.Name)
 		s[i].typeName = fieldTypeName(f.Type)
 		s[i].typeCode = f.Type
+		s[i].decimals = f.Decimal
 		s[i].nullable = f.Flag&mysql.NOT_NULL_FLAG == 0
 		s[i].minLen = math.MaxInt32
 	}
 	return s
 }
 
-func Run(d *dsn.MySQL, query string, setVars []string) error {
+func Run(d *dsn.MySQL, query string, setVars []string, binaryMode bool) error {
 	addr := fmt.Sprintf("%s:%d", d.Host(), d.Port())
 	conn, err := client.Connect(addr, d.User(), d.Password(), d.Db())
 	if err != nil {
@@ -254,10 +303,19 @@ func Run(d *dsn.MySQL, query string, setVars []string) error {
 					stats[i].nullCount++
 					continue
 				}
-				b := valueBytes(v)
-				l := len(b)
-				if l == 0 {
-					stats[i].emptyCount++
+				var l int
+				if binaryMode {
+					if fixed := typeFixedSize(stats[i].typeCode, stats[i].decimals); fixed > 0 {
+						l = fixed
+					} else {
+						l = len(valueBytes(v))
+					}
+				} else {
+					b := valueBytes(v)
+					l = len(b)
+					if l == 0 {
+						stats[i].emptyCount++
+					}
 				}
 				if l < stats[i].minLen {
 					stats[i].minLen = l
@@ -346,12 +404,12 @@ func printResults(elapsed time.Duration, rowCount, totalSize, minRowSize, maxRow
 	fmt.Println("=== Result Summary ===")
 	fmt.Printf("  Rows returned:    %s\n", formatInt(rowCount))
 	if rowCount > 0 {
-		fmt.Printf("  Total data size:  %s\n", formatBytes(totalSize))
+		fmt.Printf("  Total data size:  %s\n\n", formatBytes(totalSize))
 		fmt.Printf("  Min row size:     %s\n", formatBytes(minRowSize))
 		fmt.Printf("  Avg row size:     %s\n", formatBytes(totalSize/rowCount))
 		fmt.Printf("  Max row size:     %s\n", formatBytes(maxRowSize))
 	} else {
-		fmt.Printf("  Total data size:  0 B\n")
+		fmt.Printf("  Total data size:  0 B\n\n")
 		fmt.Printf("  Min row size:     0 B\n")
 		fmt.Printf("  Avg row size:     0 B\n")
 		fmt.Printf("  Max row size:     0 B\n")
