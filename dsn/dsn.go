@@ -213,11 +213,18 @@ func urlToConfig(dsn *url.URL) iniConfig {
 }
 
 func loadConfigFromIniFile(filename, group string) (iniConfig, error) {
-    var cfg iniConfig
-    f, err := ini.Load(filename)
+    f, err := ini.LoadSources(
+        ini.LoadOptions{
+            AllowBooleanKeys: true,
+            IgnoreContinuation: true,
+            IgnoreInlineComment: true,
+        },
+        filename,
+    )
     if err != nil {
         return iniConfig{}, fmt.Errorf("defaults file: %w", err)
     }
+    var cfg iniConfig
     // silently ignores non-existent group name
     if s := f.Section(group); s != nil {
         if err := s.MapTo(&cfg); err != nil {
