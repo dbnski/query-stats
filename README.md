@@ -42,7 +42,7 @@ If no user is specified, the current OS user is used. If no port is specified, 3
 
 `--mode binary` - reports type storage sizes as used in the binary protocol: fixed widths for integers and floats, disk-storage sizes for temporal types. Useful for estimating how much data a schema stores rather than how much a specific query transfers.
 
-## Output Example
+## Example
 
 ```
 === Query Execution ===
