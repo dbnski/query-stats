@@ -3,6 +3,7 @@ package runner
 import (
 	"fmt"
 	"math"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -263,9 +264,26 @@ func initColStats(fields []*mysql.Field) []colStats {
 	return s
 }
 
+func connOptions(opts url.Values) []client.Option {
+	var out []client.Option
+	if _, ok := opts["ssl"]; ok {
+		out = append(out, func(c *client.Conn) error {
+			c.UseSSL(true)
+			return nil
+		})
+	}
+	if vals, ok := opts["collation"]; ok && len(vals) > 0 {
+		collation := vals[0]
+		out = append(out, func(c *client.Conn) error {
+			return c.SetCollation(collation)
+		})
+	}
+	return out
+}
+
 func Run(d *dsn.MySQL, query string, setVars []string, binaryMode bool) error {
 	addr := fmt.Sprintf("%s:%d", d.Host(), d.Port())
-	conn, err := client.Connect(addr, d.User(), d.Password(), d.Db())
+	conn, err := client.Connect(addr, d.User(), d.Password(), d.Db(), connOptions(d.Options())...)
 	if err != nil {
 		return fmt.Errorf("connect: %w", err)
 	}

@@ -34,13 +34,16 @@ query-stats mysql://user:pass@address/?collation=utf8mb4_unicode_ci
 mysql://[user[:password]@]host[:port]/[database][?options]
 ```
 
-Credentials can also be loaded from a MySQL defaults file:
-
-```
-mysql://host/db?defaultsFile=~/.my.cnf&defaultsGroup=readonly
-```
-
 If no user is specified, the current OS user is used. If no port is specified, 3306 is used.
+
+### DSN Options
+
+| Option | Description |
+|--------|-------------|
+| `defaultsFile=<path>` | Read connection details from an ini file |
+| `defaultsGroup=<group>` | Section to read from the defaults file (default: `client`) |
+| `ssl` | Enable TLS for the connection |
+| `collation=<name>` | Set the connection collation |
 
 ## Size Measurement Modes
 
