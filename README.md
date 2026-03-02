@@ -17,15 +17,6 @@ echo "SELECT * FROM mydb.orders WHERE status = 'open'" | query-stats mysql://use
 
 # Set a session variable
 query-stats --set-var optimizer_switch=mrr=off mysql://user:pass@adress/
-
-# Load credential file
-query-stats mysql://address/?defaultsFile=~/.my.cnf
-
-# Enable the connection encryption
-query-stats mysql://user:pass@address/?ssl
-
-# Set the connection encoding & collation
-query-stats mysql://user:pass@address/?collation=utf8mb4_unicode_ci
 ```
 
 ## DSN Format
