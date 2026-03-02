@@ -41,7 +41,7 @@ If no user is specified, the current OS user is used. If no port is specified, 3
 | Option | Description |
 |--------|-------------|
 | `defaultsFile=<path>` | Read connection details from an ini file |
-| `defaultsGroup=<group>` | Section to read from the defaults file (default: `client`) |
+| `defaultsGroup=<group>` | Section to read from the defaults file (default: client) |
 | `ssl` | Enable TLS for the connection |
 | `collation=<name>` | Set the connection collation |
 
