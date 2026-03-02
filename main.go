@@ -48,7 +48,7 @@ func readQueryFromTerminal() (string, error) {
         switch b {
         case 0x03: // Ctrl+C
             fmt.Fprint(os.Stderr, "^C\r\n")
-            os.Exit(130)
+            os.Exit(1)
 
         case 0x04: // Ctrl+D — end of input
             fmt.Fprint(os.Stderr, "\r\n")
@@ -102,6 +102,14 @@ func main() {
     if err := cli.ValidateConfig(); err != nil {
         fmt.Println("Configuration error:", err.Error())
         os.Exit(1)
+    }
+
+    if cli.AskPass {
+        err := cli.DSN.AskPass()
+        if err != nil {
+            fmt.Println("Password error:", err.Error())
+            os.Exit(1)
+        }
     }
 
     var query string

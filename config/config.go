@@ -7,16 +7,18 @@ import (
 )
 
 type CLI struct {
-    DSN    *dsn.MySQL `
-                help:"Syntax is mysql://[user[:password]@]host[:port]/[?options]" 
-                required:"" 
-                arg:""`
-    SetVar []string `
+    AskPass bool `
+                help:"Prompt for MySQL password"`
+    SetVar  []string `
                 help:"Set a MySQL session variable (name=value)"`
-    Mode   string  `
+    Mode    string  `
                 help:"Column size measurement mode: text = COM_QUERY, binary = COM_STMT_EXECUTE" 
                 default:"text" 
                 enum:"binary,text"`
+    DSN     *dsn.MySQL `
+                help:"Syntax is mysql://[user[:password]@]host[:port]/[?options]" 
+                required:"" 
+                arg:""`
 }
 
 func (cli *CLI) ValidateConfig() error {

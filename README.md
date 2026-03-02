@@ -35,6 +35,6 @@ If no user is specified, the current OS user is used. If no port is specified, 3
 
 ## Size Measurement Modes
 
-`--mode text` (default) — measures actual wire bytes as sent by MySQL over COM_QUERY. Integer and float column sizes vary with the value magnitude; temporal columns are their canonical string lengths (e.g. DATE is always 10 bytes).
+`--mode text` (default) - measures actual wire bytes as sent by MySQL over COM_QUERY. Integer and float column sizes vary with the value magnitude; temporal columns are their canonical string lengths (e.g. DATE is always 10 bytes).
 
-`--mode binary` — reports type storage sizes as used in the binary protocol: fixed widths for integers and floats, disk-storage sizes for temporal types. Useful for estimating how much data a schema stores rather than how much a specific query transfers.
+`--mode binary` - reports type storage sizes as used in the binary protocol: fixed widths for integers and floats, disk-storage sizes for temporal types. Useful for estimating how much data a schema stores rather than how much a specific query transfers.
