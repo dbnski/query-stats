@@ -9,14 +9,23 @@ query-stats <dsn> [--set-var name=value ...] [--mode text|binary]
 ```
 
 ```sh
-# Pipe a query
-echo "SELECT * FROM orders WHERE status = 'pending'" | query-stats mysql://user:pass@localhost/mydb
-
 # Interactive prompt (Ctrl+D to run, Ctrl+C to abort)
-query-stats mysql://user@localhost/mydb
+query-stats mysql://address:3306/dbname
+
+# Pipe a query
+echo "SELECT * FROM mydb.orders WHERE status = 'pending'" | query-stats mysql://user:pass@address:3306/
 
 # Set a session variable
-echo "SELECT ..." | query-stats mysql://user@localhost/mydb --set-var optimizer_switch=mrr=off
+query-stats --set-var optimizer_switch=mrr=off mysql://user:pass@adress:3306/
+
+# Load credential file
+query-stats mysql://address:3306/?defaultsFile=~/.my.cnf
+
+# Enable the connection encryption
+query-stats 'mysql://user:pass@address:3306/?ssl'
+
+# Set the connection encoding & collation
+query-stats 'mysql://user:pass@address:3306/?collation=utf8mb4_unicode_ci'
 ```
 
 ## DSN Format
