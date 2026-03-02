@@ -5,7 +5,7 @@ A command-line tool that runs a MySQL query and reports execution statistics suc
 ## Usage
 
 ```
-query-stats <dsn> [--set-var name=value ...] [--mode text|binary]
+query-stats <dsn> [--set-var name=value ...] [--mode text|binary] [--ask-pass]
 ```
 
 ```sh
