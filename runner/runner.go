@@ -21,7 +21,7 @@ type statusGroup struct {
 
 var statusGroups = []statusGroup{
 	{
-		title: "Rows Examined (Handler)",
+		title: "Rows Examined",
 		vars: []string{
 			"Handler_read_first",
 			"Handler_read_key",
